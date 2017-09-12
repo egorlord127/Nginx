@@ -1,3 +1,12 @@
+/**
+ * @file   CurlWrapper.c
+ * @author Egor Lord <elord@idfconnect.com>
+ * @date   2017/9/12
+ *
+ */
+
+#include <tfcc_config.h>
+
 typedef struct {
     size_t      len;
     u_char     *data;
@@ -36,5 +45,23 @@ void tfcc_strlow(u_char *dst, u_char *src, size_t n);
 #define tfcc_strlen(s)           strlen(s)
 #define tfcc_strchr(s1, c)       strchr((const char *) s1, (int) c)
 
+static tfcc_inline u_char *
+tfcc_strlchr(u_char *p, u_char *last, u_char c)
+{
+    while (p < last)
+    {
+        if (*p == c)
+            return *p;
+        p++;
+    }
+    return NULL;
+}
 
-
+/*
+ * msvc and icc7 compile memset() to the inline "rep stos"
+ * while ZeroMemory() and bzero() are the calls.
+ * icc7 may also inline several mov's of a zeroed register for small blocks.
+ * TODO: memset is the most fastest?
+ */
+ #define tfcc_memzero(buf, n)   (void) memset(buf, 0, n)
+ #define tfcc_memset(buf, c, n) (void) memset(buf, c, n)
